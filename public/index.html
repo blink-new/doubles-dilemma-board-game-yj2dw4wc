@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doubles Dilemma Board Game</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 100%);
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .game-container {
+      background: rgba(255,255,255,0.95);
+      border-radius: 2rem;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+      padding: 2rem 2.5rem 2.5rem 2.5rem;
+      min-width: 900px;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .board {
+      position: relative;
+      width: 820px;
+      height: 180px;
+      margin-bottom: 2rem;
+      background: #f8fafc;
+      border-radius: 1.5rem;
+      border: 3px solid #6366f1;
+      box-shadow: 0 2px 12px 0 rgba(99,102,241,0.08);
+    }
+    .tile {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      background: #fff;
+      border: 2px solid #c7d2fe;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #3730a3;
+      box-shadow: 0 2px 8px 0 rgba(99,102,241,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .tile.start {
+      background: #22c55e;
+      color: #fff;
+      border-color: #16a34a;
+    }
+    .tile.end {
+      background: #ef4444;
+      color: #fff;
+      border-color: #b91c1c;
+    }
+    .token {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: bold;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
+    }
+    .token.red { background: #ef4444; color: #fff; }
+    .token.blue { background: #3b82f6; color: #fff; }
+    .token.green { background: #22c55e; color: #fff; }
+    .token.yellow { background: #eab308; color: #fff; }
+    .controls {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .dice {
+      font-size: 2.2rem;
+      margin: 0 0.5rem;
+      vertical-align: middle;
+    }
+    .info {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      color: #6366f1;
+      text-align: center;
+    }
+    .players {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+    .player-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .player-badge .token {
+      position: static;
+      width: 18px;
+      height: 18px;
+      font-size: 0.9rem;
+      border-width: 1.5px;
+      box-shadow: none;
+    }
+    .arrow {
+      position: absolute;
+      font-size: 1.5rem;
+      color: #6366f1;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1 style="font-size:2.2rem;font-weight:800;background:linear-gradient(90deg,#6366f1,#a21caf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Doubles Dilemma</h1>
+    <div class="board" id="board"></div>
+    <div class="controls" id="controls"></div>
+    <div class="info" id="info"></div>
+    <div class="players" id="players"></div>
+  </div>
+  <script>
+    // --- Board Path: 2 rows, 12 columns, diagonals alternating direction ---
+    const COLS = 12, ROWS = 2, TILE_SIZE = 48, GAP = 20;
+    // Path: row 0 left-to-right, then row 1 right-to-left
+    const boardPath = [];
+    for(let i=0;i<COLS;i++) boardPath.push({id:i+1, col:i, row:0});
+    for(let i=0;i<COLS;i++) boardPath.push({id:COLS+i+1, col:COLS-1-i, row:1});
+    // For diagonals, we can optionally draw arrows or lines between tiles
+
+    // --- Game State ---
+    const playerColors = ['red','blue','green','yellow'];
+    let players = [
+      {id:1, name:'Red', color:'red', pos:0},
+      {id:2, name:'Blue', color:'blue', pos:0}
+    ];
+    let currentPlayer = 0;
+    let dice = [1,1];
+    let gamePhase = 'playing';
+    let winner = null;
+
+    // --- Render Board ---
+    function renderBoard() {
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+      boardPath.forEach((tile, idx) => {
+        const div = document.createElement('div');
+        div.className = 'tile' + (idx===0?' start':'') + (idx===boardPath.length-1?' end':'');
+        div.style.left = (tile.col * (TILE_SIZE+GAP) + 24) + 'px';
+        div.style.top = (tile.row * (TILE_SIZE+GAP) + 24) + 'px';
+        div.textContent = idx===0 ? '🟢' : (idx===boardPath.length-1 ? '🔴' : tile.id);
+        // Tokens on this tile
+        players.forEach((p, pi) => {
+          if(p.pos === idx+1) {
+            const tok = document.createElement('div');
+            tok.className = 'token ' + p.color;
+            tok.textContent = p.id;
+            tok.style.left = (8 + pi*18) + 'px';
+            tok.style.top = '8px';
+            div.appendChild(tok);
+          }
+        });
+        board.appendChild(div);
+      });
+    }
+
+    // --- Render Controls ---
+    function renderControls() {
+      const controls = document.getElementById('controls');
+      controls.innerHTML = '';
+      if(gamePhase==='playing') {
+        const rollBtn = document.createElement('button');
+        rollBtn.textContent = `Roll Dice`;
+        rollBtn.style.padding = '0.7rem 1.5rem';
+        rollBtn.style.fontSize = '1.1rem';
+        rollBtn.style.background = 'linear-gradient(90deg,#6366f1,#a21caf)';
+        rollBtn.style.color = '#fff';
+        rollBtn.style.border = 'none';
+        rollBtn.style.borderRadius = '0.7rem';
+        rollBtn.style.fontWeight = 'bold';
+        rollBtn.style.cursor = 'pointer';
+        rollBtn.onclick = rollDice;
+        controls.appendChild(rollBtn);
+        // Dice
+        const diceSpan = document.createElement('span');
+        diceSpan.className = 'dice';
+        diceSpan.textContent = `🎲${dice[0]} 🎲${dice[1]}`;
+        controls.appendChild(diceSpan);
+      } else if(gamePhase==='finished') {
+        const restartBtn = document.createElement('button');
+        restartBtn.textContent = 'New Game';
+        restartBtn.style.padding = '0.7rem 1.5rem';
+        restartBtn.style.fontSize = '1.1rem';
+        restartBtn.style.background = 'linear-gradient(90deg,#6366f1,#a21caf)';
+        restartBtn.style.color = '#fff';
+        restartBtn.style.border = 'none';
+        restartBtn.style.borderRadius = '0.7rem';
+        restartBtn.style.fontWeight = 'bold';
+        restartBtn.style.cursor = 'pointer';
+        restartBtn.onclick = () => { players.forEach(p=>p.pos=0); currentPlayer=0; winner=null; gamePhase='playing'; renderAll(); };
+        controls.appendChild(restartBtn);
+      }
+    }
+
+    // --- Render Info ---
+    function renderInfo(msg) {
+      const info = document.getElementById('info');
+      if(msg) { info.textContent = msg; return; }
+      if(gamePhase==='finished') {
+        info.textContent = `${players[currentPlayer].name} wins! 🎉`;
+      } else {
+        info.textContent = `${players[currentPlayer].name}'s turn. Roll the dice!`;
+      }
+    }
+
+    // --- Render Players ---
+    function renderPlayers() {
+      const playersDiv = document.getElementById('players');
+      playersDiv.innerHTML = '';
+      players.forEach((p, i) => {
+        const badge = document.createElement('div');
+        badge.className = 'player-badge';
+        const tok = document.createElement('div');
+        tok.className = 'token ' + p.color;
+        tok.textContent = p.id;
+        badge.appendChild(tok);
+        badge.appendChild(document.createTextNode(p.name + ` (Pos: ${p.pos})`));
+        playersDiv.appendChild(badge);
+      });
+    }
+
+    // --- Game Logic ---
+    function rollDice() {
+      if(gamePhase!=='playing') return;
+      dice = [1+Math.floor(Math.random()*6), 1+Math.floor(Math.random()*6)];
+      let msg = '';
+      let p = players[currentPlayer];
+      let idx = p.pos;
+      if(idx===0) idx=1; // Start at tile 1
+      if(dice[0]===dice[1]) {
+        // Doubles: move backward
+        let move = dice[0]+dice[1];
+        let newPos = Math.max(1, idx-move);
+        msg = `Doubles! Move backward ${move} spaces.`;
+        p.pos = newPos;
+      } else {
+        // Normal: move forward
+        let move = dice[0]+dice[1];
+        let newPos = idx+move;
+        if(newPos>24) {
+          msg = `You must land exactly on 24 to win.`;
+          newPos = idx;
+        } else if(newPos===24) {
+          msg = `You reached the end!`;
+          p.pos = 24;
+          winner = p;
+          gamePhase = 'finished';
+          renderAll(msg);
+          return;
+        }
+        p.pos = newPos;
+        msg = `Move forward ${move} spaces.`;
+      }
+      // Next player
+      currentPlayer = (currentPlayer+1)%players.length;
+      renderAll(msg);
+    }
+
+    function renderAll(msg) {
+      renderBoard();
+      renderControls();
+      renderInfo(msg);
+      renderPlayers();
+    }
+
+    // --- Initial Render ---
+    renderAll();
+  </script>
+</body>
+</html>
