@@ -87,25 +87,14 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 21-24: downwards diagonally towards the left
+  // Positions 21-24: downwards diagonally towards the left (ending at 🔴)
   for (let i = 21; i <= 24; i++) {
     const step = i - 20
     positions.push({ 
       id: i, 
       x: MARGIN + (8 * STEP_SIZE) - (step * STEP_SIZE), 
       y: (BOARD_HEIGHT / 2) + (step * STEP_SIZE), 
-      label: i.toString() 
-    })
-  }
-  
-  // Positions 25-28: upwards diagonally towards the left (ending at 🔴)
-  for (let i = 25; i <= 28; i++) {
-    const step = i - 24
-    positions.push({ 
-      id: i, 
-      x: MARGIN + (4 * STEP_SIZE) - (step * STEP_SIZE), 
-      y: (BOARD_HEIGHT / 2) + (4 * STEP_SIZE) - (step * STEP_SIZE), 
-      label: i === 28 ? '🔴' : i.toString() 
+      label: i === 24 ? '🔴' : i.toString() 
     })
   }
   
@@ -184,10 +173,10 @@ function App() {
         } else {
           // Move forward on non-doubles
           const targetPosition = currentPlayer.position + sum
-          // Must land exactly on 28 to win
-          if (targetPosition === 28) {
-            newPosition = 28
-          } else if (targetPosition > 28) {
+          // Must land exactly on 24 to win
+          if (targetPosition === 24) {
+            newPosition = 24
+          } else if (targetPosition > 24) {
             newPosition = currentPlayer.position // Stay in place if would overshoot
           } else {
             newPosition = targetPosition
@@ -202,7 +191,7 @@ function App() {
         
         // Check for winner
         let winner = null
-        if (newPosition === 28) {
+        if (newPosition === 24) {
           winner = currentPlayer.id
         }
         
@@ -289,7 +278,7 @@ function App() {
               <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                 Doubles Dilemma
               </CardTitle>
-              <p className="text-gray-600 mt-2">Race to 28, but beware of doubles!</p>
+              <p className="text-gray-600 mt-2">Race to 24, but beware of doubles!</p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -351,7 +340,7 @@ function App() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
             Doubles Dilemma
           </h1>
-          <p className="text-gray-600">Follow the diagonal path: 🟢→1-4→↘️5-8→↗️9-12→↓13-16→↖️17-20→↙️21-24→↖️25-28🔴</p>
+          <p className="text-gray-600">Follow the diagonal path: 🟢→1-4→↘️5-8→↗️9-12→↓13-16→↖️17-20→↙️21-24🔴</p>
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -387,8 +376,8 @@ function App() {
                           cx={pos.x}
                           cy={pos.y}
                           r="28"
-                          fill={pos.id === 0 ? '#22c55e' : pos.id === 28 ? '#ef4444' : '#f8fafc'}
-                          stroke={pos.id === 0 ? '#16a34a' : pos.id === 28 ? '#dc2626' : '#9333ea'}
+                          fill={pos.id === 0 ? '#22c55e' : pos.id === 24 ? '#ef4444' : '#f8fafc'}
+                          stroke={pos.id === 0 ? '#16a34a' : pos.id === 24 ? '#dc2626' : '#9333ea'}
                           strokeWidth="3"
                           className="drop-shadow-md"
                         />
@@ -398,7 +387,7 @@ function App() {
                           y={pos.y + 6}
                           textAnchor="middle"
                           className="text-sm font-bold"
-                          fill={pos.id === 0 || pos.id === 28 ? '#ffffff' : '#374151'}
+                          fill={pos.id === 0 || pos.id === 24 ? '#ffffff' : '#374151'}
                           fontSize="16"
                           fontFamily="Inter, sans-serif"
                         >
@@ -452,7 +441,7 @@ function App() {
                       21-24 ↙️
                     </text>
                     <text x="150" y="250" className="text-sm font-semibold" fill="#9333ea">
-                      25-28 ↖️ → 🔴 End
+                      21-24 ↙️ → 🔴 End
                     </text>
                   </svg>
                 </div>
