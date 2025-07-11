@@ -22,8 +22,8 @@ const DiceIcon = ({ value }: { value: number }) => {
 const getBoardPositions = () => {
   const positions = []
   const BOARD_HEIGHT = 600
-  const MARGIN = 60
-  const STEP_SIZE = 50
+  const MARGIN = 80
+  const STEP_SIZE = 60
   
   // Start position (🟢) - positioned at left center
   positions.push({ 
@@ -43,7 +43,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 5-8: downwards diagonally towards the right (↘️)
+  // Positions 5-8: diagonal down-right (↘️)
   for (let i = 5; i <= 8; i++) {
     const step = i - 4
     positions.push({ 
@@ -54,7 +54,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 9-12: upwards diagonally towards the right (↗️)
+  // Positions 9-12: diagonal up-right (↗️)
   for (let i = 9; i <= 12; i++) {
     const step = i - 8
     positions.push({ 
@@ -65,7 +65,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 13-16: downwards straight towards the bottom (↓)
+  // Positions 13-16: straight down (↓)
   for (let i = 13; i <= 16; i++) {
     const step = i - 12
     positions.push({ 
@@ -76,7 +76,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 17-20: upwards diagonally towards the left (↖️)
+  // Positions 17-20: diagonal up-left (↖️)
   for (let i = 17; i <= 20; i++) {
     const step = i - 16
     positions.push({ 
@@ -87,7 +87,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 21-25: downwards diagonally towards the left (↙️) ending at 🔴
+  // Positions 21-25: diagonal down-left (↙️) ending at 🔴
   for (let i = 21; i <= 25; i++) {
     const step = i - 20
     positions.push({ 
@@ -349,7 +349,7 @@ function App() {
             <Card className="shadow-xl bg-white/90 backdrop-blur-sm">
               <CardContent className="p-6">
                 <div className="relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg border-2 border-purple-200 p-4" style={{ height: '650px' }}>
-                  <svg width="100%" height="100%" viewBox="0 0 1000 650" className="overflow-visible">
+                  <svg width="100%" height="100%" viewBox="0 0 1100 650" className="overflow-visible">
                     {/* Draw path lines between positions */}
                     {boardPositions.slice(0, -1).map((pos, index) => {
                       const nextPos = boardPositions[index + 1]
