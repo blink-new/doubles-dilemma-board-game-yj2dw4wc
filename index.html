@@ -142,10 +142,10 @@
   <script>
     // --- Board Path: 2 rows, 12 columns, diagonals alternating direction ---
     const COLS = 12, ROWS = 2, TILE_SIZE = 48, GAP = 20;
-    // Path: row 0 left-to-right, then row 1 right-to-left
+    // Path: row 0 left-to-right, then row 1 right-to-left (25 total positions)
     const boardPath = [];
     for(let i=0;i<COLS;i++) boardPath.push({id:i+1, col:i, row:0});
-    for(let i=0;i<COLS;i++) boardPath.push({id:COLS+i+1, col:COLS-1-i, row:1});
+    for(let i=0;i<COLS+1;i++) boardPath.push({id:COLS+i+1, col:COLS-1-i, row:1});
     // For diagonals, we can optionally draw arrows or lines between tiles
 
     // --- Game State ---
@@ -267,12 +267,12 @@
         // Normal: move forward
         let move = dice[0]+dice[1];
         let newPos = idx+move;
-        if(newPos>24) {
-          msg = `You must land exactly on 24 to win.`;
+        if(newPos>25) {
+          msg = `You must land exactly on 25 to win.`;
           newPos = idx;
-        } else if(newPos===24) {
+        } else if(newPos===25) {
           msg = `You reached the end!`;
-          p.pos = 24;
+          p.pos = 25;
           winner = p;
           gamePhase = 'finished';
           renderAll(msg);
