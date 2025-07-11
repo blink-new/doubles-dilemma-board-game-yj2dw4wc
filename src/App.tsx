@@ -21,9 +21,9 @@ const DiceIcon = ({ value }: { value: number }) => {
 // Create board positions following the exact diagonal pattern described
 const getBoardPositions = () => {
   const positions = []
-  const BOARD_HEIGHT = 700
-  const MARGIN = 80
-  const STEP_SIZE = 60
+  const BOARD_HEIGHT = 600
+  const MARGIN = 60
+  const STEP_SIZE = 50
   
   // Start position (🟢) - positioned at left center
   positions.push({ 
@@ -43,7 +43,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 5-8: downwards diagonally towards the right
+  // Positions 5-8: downwards diagonally towards the right (↘️)
   for (let i = 5; i <= 8; i++) {
     const step = i - 4
     positions.push({ 
@@ -54,7 +54,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 9-12: upwards diagonally towards the right
+  // Positions 9-12: upwards diagonally towards the right (↗️)
   for (let i = 9; i <= 12; i++) {
     const step = i - 8
     positions.push({ 
@@ -65,7 +65,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 13-16: downwards straight towards the bottom
+  // Positions 13-16: downwards straight towards the bottom (↓)
   for (let i = 13; i <= 16; i++) {
     const step = i - 12
     positions.push({ 
@@ -76,7 +76,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 17-20: upwards diagonally towards the left
+  // Positions 17-20: upwards diagonally towards the left (↖️)
   for (let i = 17; i <= 20; i++) {
     const step = i - 16
     positions.push({ 
@@ -87,7 +87,7 @@ const getBoardPositions = () => {
     })
   }
   
-  // Positions 21-25: downwards diagonally towards the left (ending at 🔴)
+  // Positions 21-25: downwards diagonally towards the left (↙️) ending at 🔴
   for (let i = 21; i <= 25; i++) {
     const step = i - 20
     positions.push({ 
@@ -278,7 +278,7 @@ function App() {
               <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                 Doubles Dilemma
               </CardTitle>
-              <p className="text-gray-600 mt-2">Race to 24, but beware of doubles!</p>
+              <p className="text-gray-600 mt-2">Race to 25, but beware of doubles!</p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -348,8 +348,8 @@ function App() {
           <div className="lg:col-span-2">
             <Card className="shadow-xl bg-white/90 backdrop-blur-sm">
               <CardContent className="p-6">
-                <div className="relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg border-2 border-purple-200 p-4" style={{ height: '750px' }}>
-                  <svg width="100%" height="100%" viewBox="0 0 1100 750" className="overflow-visible">
+                <div className="relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg border-2 border-purple-200 p-4" style={{ height: '650px' }}>
+                  <svg width="100%" height="100%" viewBox="0 0 1000 650" className="overflow-visible">
                     {/* Draw path lines between positions */}
                     {boardPositions.slice(0, -1).map((pos, index) => {
                       const nextPos = boardPositions[index + 1]
@@ -422,26 +422,23 @@ function App() {
                     </defs>
                     
                     {/* Path direction labels */}
-                    <text x="200" y="50" className="text-sm font-semibold" fill="#9333ea">
-                      Start 🟢 → 1-4 (horizontal)
+                    <text x="150" y="50" className="text-sm font-semibold" fill="#9333ea">
+                      🟢 Start → 1-4 (horizontal)
                     </text>
-                    <text x="450" y="450" className="text-sm font-semibold" fill="#9333ea">
-                      5-8 ↘️
+                    <text x="450" y="500" className="text-sm font-semibold" fill="#9333ea">
+                      5-8 ↘️ (down-right diagonal)
                     </text>
-                    <text x="650" y="250" className="text-sm font-semibold" fill="#9333ea">
-                      9-12 ↗️
+                    <text x="650" y="200" className="text-sm font-semibold" fill="#9333ea">
+                      9-12 ↗️ (up-right diagonal)
                     </text>
-                    <text x="800" y="450" className="text-sm font-semibold" fill="#9333ea">
-                      13-16 ↓
+                    <text x="720" y="450" className="text-sm font-semibold" fill="#9333ea">
+                      13-16 ↓ (straight down)
                     </text>
-                    <text x="650" y="250" className="text-sm font-semibold" fill="#9333ea">
-                      17-20 ↖️
+                    <text x="550" y="200" className="text-sm font-semibold" fill="#9333ea">
+                      17-20 ↖️ (up-left diagonal)
                     </text>
-                    <text x="350" y="450" className="text-sm font-semibold" fill="#9333ea">
-                      21-25 ↙️
-                    </text>
-                    <text x="150" y="250" className="text-sm font-semibold" fill="#9333ea">
-                      21-25 ↙️ → 🔴 End
+                    <text x="250" y="500" className="text-sm font-semibold" fill="#9333ea">
+                      21-25 ↙️ (down-left diagonal) → 🔴 End
                     </text>
                   </svg>
                 </div>
